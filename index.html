@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Multiplication Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+        }
+        .box {
+            background: white;
+            padding: 20px;
+            margin: 50px auto;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, select, button {
+            font-size: 16px;
+            padding: 5px;
+            margin: 10px;
+        }
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Multiplication Practice</h2>
+
+    <label>Select a table:</label><br>
+    <select id="tableNumber">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="12">12</option>
+    </select>
+
+    <h3 id="question"></h3>
+
+    <input type="number" id="answer" placeholder="Your answer">
+    <br>
+    <button onclick="checkAnswer()">Check</button>
+
+    <p class="result" id="result"></p>
+    <p>Score: <span id="score">0</span></p>
+</div>
+
+<script>
+    let multiplier = 1;
+    let score = 0;
+
+    function newQuestion() {
+        multiplier = Math.floor(Math.random() * 12) + 1;
+        const table = document.getElementById("tableNumber").value;
+        document.getElementById("question").innerText =
+            `${table} × ${multiplier} = ?`;
+        document.getElementById("answer").value = "";
+        document.getElementById("result").innerText = "";
+    }
+
+    function checkAnswer() {
+        const table = document.getElementById("tableNumber").value;
+        const answer = document.getElementById("answer").value;
+        const correct = table * multiplier;
+
+        if (parseInt(answer) === correct) {
+            document.getElementById("result").innerText = "✅ Correct!";
+            score++;
+        } else {
+            document.getElementById("result").innerText =
+                `❌ Wrong. Correct answer is ${correct}`;
+        }
+
+        document.getElementById("score").innerText = score;
+        setTimeout(newQuestion, 1500);
+    }
+
+    newQuestion();
+</script>
+
+</body>
+</html>
