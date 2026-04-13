@@ -2,93 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Multiplication Practice</title>
+    <title>Ivaan's Learning Games 🎮</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
             text-align: center;
         }
-        .box {
+        h1 { color: #ff6600; font-size: 36px; margin-top: 40px; }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px;
+        }
+        .card {
             background: white;
-            padding: 20px;
-            margin: 50px auto;
-            width: 300px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        input, select, button {
-            font-size: 16px;
-            padding: 5px;
-            margin: 10px;
-        }
-        .result {
+            border-radius: 15px;
+            padding: 30px 20px;
+            width: 150px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: #333;
             font-size: 18px;
             font-weight: bold;
+            transition: transform 0.2s;
         }
+        .card:hover { transform: scale(1.05); }
+        .card .icon { font-size: 48px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
+    <h1>🎮 Ivaan's Learning Games</h1>
+    <p style="font-size:18px; color:#666;">Pick a game to play!</p>
+    <p style="margin-bottom:10px;"><a href="landing/index.html" style="font-size:16px; color:#ff6600; font-weight:bold;">🌟 Go to Learning Centre (MCQ Quizzes) →</a></p>
 
-<div class="box">
-    <h2>Multiplication Practice</h2>
-
-    <label>Select a table:</label><br>
-    <select id="tableNumber">
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-        <option value="12">12</option>
-    </select>
-
-    <h3 id="question"></h3>
-
-    <input type="number" id="answer" placeholder="Your answer">
-    <br>
-    <button onclick="checkAnswer()">Check</button>
-
-    <p class="result" id="result"></p>
-    <p>Score: <span id="score">0</span></p>
-</div>
-
-<script>
-    let multiplier = 1;
-    let score = 0;
-
-    function newQuestion() {
-        multiplier = Math.floor(Math.random() * 12) + 1;
-        const table = document.getElementById("tableNumber").value;
-        document.getElementById("question").innerText =
-            `${table} × ${multiplier} = ?`;
-        document.getElementById("answer").value = "";
-        document.getElementById("result").innerText = "";
-    }
-
-    function checkAnswer() {
-        const table = document.getElementById("tableNumber").value;
-        const answer = document.getElementById("answer").value;
-        const correct = table * multiplier;
-
-        if (parseInt(answer) === correct) {
-            document.getElementById("result").innerText = "✅ Correct!";
-            score++;
-        } else {
-            document.getElementById("result").innerText =
-                `❌ Wrong. Correct answer is ${correct}`;
-        }
-
-        document.getElementById("score").innerText = score;
-        setTimeout(newQuestion, 1500);
-    }
-
-    newQuestion();
-</script>
-
+    <div class="grid">
+        <a href="multiplication/index.html" class="card">
+            <div class="icon">✖️</div>
+            Multiplication
+        </a>
+        <a href="addition/index.html" class="card">
+            <div class="icon">➕</div>
+            Addition
+        </a>
+        <a href="landing/subtraction.html" class="card">
+            <div class="icon">➖</div>
+            Subtraction
+        </a>
+        <a href="capitals/index.html" class="card">
+            <div class="icon">🌍</div>
+            Capitals Quiz
+        </a>
+        <a href="flags/index.html" class="card">
+            <div class="icon">🚩</div>
+            Flag Quiz
+        </a>
+        <a href="reasoning/verbal/index.html" class="card">
+            <div class="icon">📝</div>
+            Verbal Reasoning
+        </a>
+        <a href="reasoning/non-verbal/index.html" class="card">
+            <div class="icon">🔷</div>
+            Non-Verbal Reasoning
+        </a>
+    </div>
 </body>
 </html>
