@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏳️ Flag Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white; border-radius: 28px;
+            padding: 36px 30px; max-width: 540px; width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 14px;
+        }
+        .score-display { font-size: 20px; font-weight: bold; color: #333; }
+        .q-counter { font-size: 15px; color: #999; font-weight: bold; }
+        .progress {
+            width: 100%; height: 10px; background: #ffeaa0;
+            border-radius: 5px; margin-bottom: 24px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #f7971e, #ffd200);
+            border-radius: 5px; transition: width 0.4s;
+        }
+        .subject-icon { font-size: 60px; text-align: center; margin-bottom: 6px; }
+        h1 { text-align: center; font-size: 24px; color: #555; margin-bottom: 20px; }
+        .flag-display {
+            font-size: 100px; text-align: center;
+            margin-bottom: 10px; line-height: 1.2;
+        }
+        .question {
+            font-size: 20px; font-weight: bold; text-align: center;
+            color: #444; margin-bottom: 24px;
+        }
+        .options {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; margin-bottom: 20px;
+        }
+        .option-btn {
+            padding: 16px 10px; font-size: 15px; font-weight: bold;
+            border: 3px solid #ffe680; border-radius: 16px;
+            cursor: pointer; background: #fffde7;
+            transition: all 0.15s; color: #333;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .option-btn:hover:not(:disabled) {
+            border-color: #f7971e; background: #fff8e1; transform: scale(1.03);
+        }
+        .option-btn:disabled { cursor: default; }
+        .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+        .option-btn.wrong   { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .feedback {
+            text-align: center; font-size: 24px;
+            min-height: 36px; margin-bottom: 12px; font-weight: bold;
+        }
+        .back-btn {
+            display: block; text-align: center; margin-top: 14px;
+            color: #bbb; text-decoration: none; font-size: 15px;
+        }
+        .back-btn:hover { color: #888; }
+        .end-screen { display: none; text-align: center; }
+        .end-screen .big-emoji { font-size: 90px; margin: 16px 0; }
+        .end-screen h2 { font-size: 32px; margin-bottom: 14px; color: #333; }
+        .end-screen .final-score { font-size: 22px; color: #666; margin-bottom: 28px; }
+        .restart-btn {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            color: white; border: none; padding: 16px 36px;
+            border-radius: 14px; font-size: 20px; font-weight: bold;
+            cursor: pointer; transition: opacity 0.2s;
+            box-shadow: 0 4px 15px rgba(247,151,30,0.45);
+        }
+        .restart-btn:hover { opacity: 0.85; }
+        .stars-row { font-size: 36px; letter-spacing: 6px; margin: 10px 0 20px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div id="quiz-screen">
+        <div class="header">
+            <span class="score-display">⭐ <span id="score">0</span></span>
+            <span class="q-counter">Q <span id="qnum">1</span> / 10</span>
+        </div>
+        <div class="progress">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <div class="subject-icon">🏳️</div>
+        <h1>Flag Quiz</h1>
+        <div class="flag-display" id="flag-display">🏳️</div>
+        <div class="question">Which country does this flag belong to?</div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <a href="index.html" class="back-btn">← Learning Centre</a>
+    </div>
+
+    <div class="end-screen" id="end-screen">
+        <div class="big-emoji" id="end-emoji">🎉</div>
+        <div class="stars-row" id="stars-row"></div>
+        <h2 id="end-title">Well Done!</h2>
+        <div class="final-score" id="final-score"></div>
+        <button class="restart-btn" onclick="startQuiz()">Play Again 🔄</button>
+        <br>
+        <a href="index.html" class="back-btn" style="margin-top:16px;">← Learning Centre</a>
+    </div>
+</div>
+
+<script>
+const ALL_FLAGS = [
+    /* ── Europe ── */
+    { flag: "🇬🇧", country: "United Kingdom",  distractors: ["Ireland","France","Netherlands"] },
+    { flag: "🇫🇷", country: "France",           distractors: ["Belgium","Italy","Luxembourg"] },
+    { flag: "🇩🇪", country: "Germany",          distractors: ["Austria","Belgium","Switzerland"] },
+    { flag: "🇮🇹", country: "Italy",            distractors: ["France","Spain","Hungary"] },
+    { flag: "🇪🇸", country: "Spain",            distractors: ["Portugal","Italy","Argentina"] },
+    { flag: "🇵🇹", country: "Portugal",         distractors: ["Spain","Brazil","Angola"] },
+    { flag: "🇳🇱", country: "Netherlands",      distractors: ["Luxembourg","France","Germany"] },
+    { flag: "🇧🇪", country: "Belgium",          distractors: ["Netherlands","France","Germany"] },
+    { flag: "🇨🇭", country: "Switzerland",      distractors: ["Austria","Germany","Denmark"] },
+    { flag: "🇦🇹", country: "Austria",          distractors: ["Germany","Switzerland","Hungary"] },
+    { flag: "🇸🇪", country: "Sweden",           distractors: ["Norway","Denmark","Finland"] },
+    { flag: "🇳🇴", country: "Norway",           distractors: ["Sweden","Denmark","Iceland"] },
+    { flag: "🇩🇰", country: "Denmark",          distractors: ["Norway","Sweden","Switzerland"] },
+    { flag: "🇫🇮", country: "Finland",          distractors: ["Sweden","Estonia","Norway"] },
+    { flag: "🇮🇸", country: "Iceland",          distractors: ["Norway","Denmark","Ireland"] },
+    { flag: "🇮🇪", country: "Ireland",          distractors: ["Italy","Ivory Coast","Nigeria"] },
+    { flag: "🇬🇷", country: "Greece",           distractors: ["Cyprus","Bulgaria","Serbia"] },
+    { flag: "🇵🇱", country: "Poland",           distractors: ["Austria","Indonesia","Monaco"] },
+    { flag: "🇨🇿", country: "Czech Republic",   distractors: ["Slovakia","Slovenia","Serbia"] },
+    { flag: "🇭🇺", country: "Hungary",          distractors: ["Italy","Bulgaria","France"] },
+    { flag: "🇷🇴", country: "Romania",          distractors: ["Chad","Moldova","Bulgaria"] },
+    { flag: "🇧🇬", country: "Bulgaria",         distractors: ["Hungary","Russia","Serbia"] },
+    { flag: "🇷🇸", country: "Serbia",           distractors: ["Croatia","Slovakia","Bulgaria"] },
+    { flag: "🇭🇷", country: "Croatia",          distractors: ["Serbia","Slovakia","Czech Republic"] },
+    { flag: "🇺🇦", country: "Ukraine",          distractors: ["Sweden","Kazakhstan","Argentina"] },
+    { flag: "🇷🇺", country: "Russia",           distractors: ["Netherlands","Slovenia","Serbia"] },
+    { flag: "🇹🇷", country: "Turkey",           distractors: ["Tunisia","Pakistan","Azerbaijan"] },
+    { flag: "🇸🇰", country: "Slovakia",         distractors: ["Slovenia","Czech Republic","Serbia"] },
+    { flag: "🇸🇮", country: "Slovenia",         distractors: ["Slovakia","Russia","Serbia"] },
+    { flag: "🇱🇹", country: "Lithuania",        distractors: ["Latvia","Estonia","Bolivia"] },
+
+    /* ── Americas ── */
+    { flag: "🇺🇸", country: "United States",    distractors: ["Australia","New Zealand","Liberia"] },
+    { flag: "🇨🇦", country: "Canada",           distractors: ["United States","Australia","Peru"] },
+    { flag: "🇧🇷", country: "Brazil",           distractors: ["Bolivia","Colombia","Argentina"] },
+    { flag: "🇲🇽", country: "Mexico",           distractors: ["Italy","Hungary","Bolivia"] },
+    { flag: "🇦🇷", country: "Argentina",        distractors: ["Uruguay","Greece","El Salvador"] },
+    { flag: "🇨🇱", country: "Chile",            distractors: ["Cuba","Texas","Puerto Rico"] },
+    { flag: "🇨🇴", country: "Colombia",         distractors: ["Ecuador","Venezuela","Bolivia"] },
+    { flag: "🇵🇪", country: "Peru",             distractors: ["Colombia","Bolivia","Ecuador"] },
+    { flag: "🇻🇪", country: "Venezuela",        distractors: ["Colombia","Ecuador","Bolivia"] },
+    { flag: "🇨🇺", country: "Cuba",             distractors: ["Chile","Puerto Rico","Liberia"] },
+    { flag: "🇯🇲", country: "Jamaica",          distractors: ["Guyana","Suriname","Trinidad"] },
+    { flag: "🇪🇨", country: "Ecuador",          distractors: ["Colombia","Venezuela","Bolivia"] },
+    { flag: "🇧🇴", country: "Bolivia",          distractors: ["Peru","Ecuador","Colombia"] },
+    { flag: "🇵🇦", country: "Panama",           distractors: ["Costa Rica","Honduras","Guatemala"] },
+    { flag: "🇨🇷", country: "Costa Rica",       distractors: ["Panama","Guatemala","Honduras"] },
+
+    /* ── Asia ── */
+    { flag: "🇯🇵", country: "Japan",            distractors: ["Bangladesh","Palau","Switzerland"] },
+    { flag: "🇨🇳", country: "China",            distractors: ["Vietnam","Angola","Mozambique"] },
+    { flag: "🇮🇳", country: "India",            distractors: ["Niger","Ireland","Ivory Coast"] },
+    { flag: "🇰🇷", country: "South Korea",      distractors: ["Japan","China","Mongolia"] },
+    { flag: "🇰🇵", country: "North Korea",      distractors: ["South Korea","Cuba","Puerto Rico"] },
+    { flag: "🇻🇳", country: "Vietnam",          distractors: ["China","Angola","Portugal"] },
+    { flag: "🇹🇭", country: "Thailand",         distractors: ["Laos","Cambodia","Myanmar"] },
+    { flag: "🇮🇩", country: "Indonesia",        distractors: ["Poland","Monaco","Singapore"] },
+    { flag: "🇲🇾", country: "Malaysia",         distractors: ["Indonesia","Brunei","Philippines"] },
+    { flag: "🇸🇬", country: "Singapore",        distractors: ["South Korea","Malaysia","Taiwan"] },
+    { flag: "🇵🇭", country: "Philippines",      distractors: ["Cuba","Chile","Malaysia"] },
+    { flag: "🇵🇰", country: "Pakistan",         distractors: ["Saudi Arabia","Algeria","Malaysia"] },
+    { flag: "🇧🇩", country: "Bangladesh",       distractors: ["Japan","Libya","Pakistan"] },
+    { flag: "🇱🇰", country: "Sri Lanka",        distractors: ["India","Bhutan","Laos"] },
+    { flag: "🇳🇵", country: "Nepal",            distractors: ["Bhutan","Tibet","Mongolia"] },
+    { flag: "🇦🇫", country: "Afghanistan",      distractors: ["Saudi Arabia","Iran","Iraq"] },
+    { flag: "🇮🇷", country: "Iran",             distractors: ["Iraq","Afghanistan","Tajikistan"] },
+    { flag: "🇮🇶", country: "Iraq",             distractors: ["Iran","Kuwait","Jordan"] },
+    { flag: "🇸🇦", country: "Saudi Arabia",     distractors: ["UAE","Kuwait","Qatar"] },
+    { flag: "🇦🇪", country: "UAE",              distractors: ["Kuwait","Qatar","Bahrain"] },
+    { flag: "🇮🇱", country: "Israel",           distractors: ["Palestine","Greece","Finland"] },
+    { flag: "🇯🇴", country: "Jordan",           distractors: ["Iraq","Kuwait","Saudi Arabia"] },
+    { flag: "🇱🇧", country: "Lebanon",          distractors: ["Jordan","Syria","Cyprus"] },
+    { flag: "🇰🇼", country: "Kuwait",           distractors: ["UAE","Qatar","Bahrain"] },
+    { flag: "🇶🇦", country: "Qatar",            distractors: ["Bahrain","Kuwait","UAE"] },
+    { flag: "🇲🇳", country: "Mongolia",         distractors: ["China","Kyrgyzstan","Kazakhstan"] },
+    { flag: "🇰🇭", country: "Cambodia",         distractors: ["Thailand","Laos","Myanmar"] },
+    { flag: "🇲🇲", country: "Myanmar",          distractors: ["Thailand","Cambodia","Laos"] },
+    { flag: "🇦🇿", country: "Azerbaijan",       distractors: ["Turkey","Uzbekistan","Kyrgyzstan"] },
+    { flag: "🇬🇪", country: "Georgia",          distractors: ["Armenia","Azerbaijan","Belarus"] },
+
+    /* ── Africa ── */
+    { flag: "🇪🇬", country: "Egypt",            distractors: ["Libya","Sudan","Yemen"] },
+    { flag: "🇳🇬", country: "Nigeria",          distractors: ["Benin","Cameroon","Niger"] },
+    { flag: "🇿🇦", country: "South Africa",     distractors: ["Zimbabwe","Zambia","Kenya"] },
+    { flag: "🇰🇪", country: "Kenya",            distractors: ["Tanzania","Uganda","Ethiopia"] },
+    { flag: "🇪🇹", country: "Ethiopia",         distractors: ["Eritrea","Kenya","Somalia"] },
+    { flag: "🇬🇭", country: "Ghana",            distractors: ["Togo","Benin","Ivory Coast"] },
+    { flag: "🇸🇳", country: "Senegal",          distractors: ["Mali","Guinea","Gambia"] },
+    { flag: "🇹🇿", country: "Tanzania",         distractors: ["Kenya","Uganda","Rwanda"] },
+    { flag: "🇲🇦", country: "Morocco",          distractors: ["Tunisia","Algeria","Libya"] },
+    { flag: "🇩🇿", country: "Algeria",          distractors: ["Morocco","Tunisia","Libya"] },
+    { flag: "🇹🇳", country: "Tunisia",          distractors: ["Algeria","Morocco","Libya"] },
+    { flag: "🇱🇾", country: "Libya",            distractors: ["Egypt","Tunisia","Algeria"] },
+    { flag: "🇨🇲", country: "Cameroon",         distractors: ["Mali","Senegal","Guinea"] },
+    { flag: "🇨🇩", country: "DR Congo",         distractors: ["Congo","Cameroon","Angola"] },
+    { flag: "🇦🇴", country: "Angola",           distractors: ["Congo","Zambia","Mozambique"] },
+    { flag: "🇲🇿", country: "Mozambique",       distractors: ["Zimbabwe","Tanzania","Angola"] },
+    { flag: "🇿🇼", country: "Zimbabwe",         distractors: ["Zambia","Mozambique","Malawi"] },
+    { flag: "🇺🇬", country: "Uganda",           distractors: ["Kenya","Rwanda","Tanzania"] },
+    { flag: "🇷🇼", country: "Rwanda",           distractors: ["Uganda","Burundi","Tanzania"] },
+    { flag: "🇸🇩", country: "Sudan",            distractors: ["Ethiopia","Chad","Egypt"] },
+
+    /* ── Oceania ── */
+    { flag: "🇦🇺", country: "Australia",        distractors: ["New Zealand","Fiji","Tuvalu"] },
+    { flag: "🇳🇿", country: "New Zealand",      distractors: ["Australia","Fiji","Samoa"] },
+    { flag: "🇫🇯", country: "Fiji",             distractors: ["Samoa","Tonga","Vanuatu"] },
+];
+
+const TOTAL = 10;
+const PRAISE = ['🎉 Brilliant!','⭐ Correct!','🌟 Amazing!','🎊 Great job!','🏳️ Flag master!'];
+let score = 0, qnum = 0, locked = false;
+let questions = [], correct_answer;
+
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = randInt(0, i); [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function showQuestion() {
+    locked = false;
+    const q = questions[qnum];
+    correct_answer = q.country;
+
+    const opts = shuffle([q.country, ...q.distractors]);
+
+    document.getElementById('flag-display').textContent = q.flag;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('qnum').textContent = qnum + 1;
+    document.getElementById('progress-fill').style.width = (qnum / TOTAL * 100) + '%';
+
+    const container = document.getElementById('options');
+    container.innerHTML = '';
+    opts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = opt;
+        btn.onclick = () => pick(btn, opt, container);
+        container.appendChild(btn);
+    });
+}
+
+function pick(btn, selected, container) {
+    if (locked) return;
+    locked = true;
+    container.querySelectorAll('.option-btn').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === correct_answer) b.classList.add('correct');
+    });
+    if (selected === correct_answer) {
+        btn.classList.add('correct');
+        document.getElementById('feedback').textContent = PRAISE[randInt(0, PRAISE.length - 1)];
+        score++;
+        document.getElementById('score').textContent = score;
+    } else {
+        btn.classList.add('wrong');
+        document.getElementById('feedback').textContent = `❌ Answer: ${correct_answer}`;
+    }
+    qnum++;
+    setTimeout(qnum >= TOTAL ? showEnd : showQuestion, 1700);
+}
+
+function showEnd() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('end-screen').style.display = 'block';
+    const pct = Math.round(score / TOTAL * 100);
+    let emoji = '😊', title = 'Keep Practising!';
+    const stars = Math.round(score / TOTAL * 5);
+    if (pct >= 90) { emoji = '🏆'; title = "Geography Genius! 🌍"; }
+    else if (pct >= 70) { emoji = '🎉'; title = 'Well Done!'; }
+    else if (pct >= 50) { emoji = '👍'; title = 'Good Try!'; }
+    document.getElementById('end-emoji').textContent = emoji;
+    document.getElementById('end-title').textContent = title;
+    document.getElementById('final-score').textContent = `You got ${score} out of ${TOTAL}! (${pct}%)`;
+    document.getElementById('stars-row').textContent = '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+}
+
+function startQuiz() {
+    score = 0; qnum = 0;
+    questions = shuffle(ALL_FLAGS).slice(0, TOTAL);
+    document.getElementById('score').textContent = 0;
+    document.getElementById('quiz-screen').style.display = 'block';
+    document.getElementById('end-screen').style.display = 'none';
+    showQuestion();
+}
+
+startQuiz();
+</script>
+</body>
+</html>
