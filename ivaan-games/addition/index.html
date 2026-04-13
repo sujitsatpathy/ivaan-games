@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Addition Practice</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<div class="box">
+    <h2>Addition Practice</h2>
+
+    <label>Select a level:</label><br>
+    <select id="level">
+        <option value="easy">Easy (1-10)</option>
+        <option value="medium">Medium (1-20)</option>
+        <option value="hard">Hard (1-50)</option>
+    </select>
+
+    <h3 id="question"></h3>
+
+    <input type="number" id="answer" placeholder="Your answer">
+    <br>
+    <button onclick="checkAnswer()">Check</button>
+
+    <p class="result" id="result"></p>
+    <p>Score: <span id="score">0</span></p>
+</div>
+
+<script>
+    let score = 0;
+    let currentQuestion;
+
+    function newQuestion() {
+        const level = document.getElementById("level").value;
+        let num1, num2;
+
+        if (level === "easy") {
+            num1 = Math.floor(Math.random() * 10) + 1;
+            num2 = Math.floor(Math.random() * 10) + 1;
+        } else if (level === "medium") {
+            num1 = Math.floor(Math.random() * 20) + 1;
+            num2 = Math.floor(Math.random() * 20) + 1;
+        } else {
+            num1 = Math.floor(Math.random() * 50) + 1;
+            num2 = Math.floor(Math.random() * 50) + 1;
+        }
+
+        currentQuestion = num1 + num2;
+        document.getElementById("question").innerText = `${num1} + ${num2} = ?`;
+        document.getElementById("answer").value = "";
+        document.getElementById("result").innerText = "";
+    }
+
+    function checkAnswer() {
+        const answer = document.getElementById("answer").value;
+
+        if (parseInt(answer) === currentQuestion) {
+            document.getElementById("result").innerText = "✅ Correct!";
+            score++;
+        } else {
+            document.getElementById("result").innerText = `❌ Wrong. Correct answer is ${currentQuestion}`;
+        }
+
+        document.getElementById("score").innerText = score;
+        setTimeout(newQuestion, 1500);
+    }
+
+    newQuestion();
+</script>
+
+</body>
+</html>
