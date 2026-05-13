@@ -26,12 +26,16 @@
         .q-counter { font-size: 15px; color: #999; font-weight: bold; }
         .progress {
             width: 100%; height: 10px; background: #ffeaa0;
-            border-radius: 5px; margin-bottom: 24px; overflow: hidden;
+            border-radius: 5px; margin-bottom: 10px; overflow: hidden;
         }
         .progress-fill {
             height: 100%; background: linear-gradient(90deg, #f7971e, #ffd200);
             border-radius: 5px; transition: width 0.4s;
         }
+        .timer-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .timer-bar-bg { flex: 1; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+        .timer-bar { height: 100%; border-radius: 4px; width: 100%; transition: width 0.1s linear; background: #43e97b; }
+        .timer-num { font-size: 16px; font-weight: bold; color: #555; min-width: 22px; text-align: right; }
         .subject-icon { font-size: 60px; text-align: center; margin-bottom: 6px; }
         h1 { text-align: center; font-size: 24px; color: #555; margin-bottom: 20px; }
         .flag-display {
@@ -71,7 +75,9 @@
         .end-screen { display: none; text-align: center; }
         .end-screen .big-emoji { font-size: 90px; margin: 16px 0; }
         .end-screen h2 { font-size: 32px; margin-bottom: 14px; color: #333; }
-        .end-screen .final-score { font-size: 22px; color: #666; margin-bottom: 28px; }
+        .end-screen .final-score { font-size: 22px; color: #666; margin-bottom: 8px; }
+        .best-score { font-size: 16px; color: #888; margin-bottom: 20px; }
+        .new-best { color: #28a745 !important; font-weight: bold; font-size: 18px !important; }
         .restart-btn {
             background: linear-gradient(135deg, #f7971e, #ffd200);
             color: white; border: none; padding: 16px 36px;
@@ -93,6 +99,10 @@
         <div class="progress">
             <div class="progress-fill" id="progress-fill" style="width:0%"></div>
         </div>
+        <div class="timer-wrap">
+            <div class="timer-bar-bg"><div class="timer-bar" id="timer-bar"></div></div>
+            <span class="timer-num" id="timer-num">10</span>
+        </div>
         <div class="subject-icon">🏳️</div>
         <h1>Flag Quiz</h1>
         <div class="flag-display" id="flag-display">🏳️</div>
@@ -107,6 +117,7 @@
         <div class="stars-row" id="stars-row"></div>
         <h2 id="end-title">Well Done!</h2>
         <div class="final-score" id="final-score"></div>
+        <div class="best-score" id="best-score"></div>
         <button class="restart-btn" onclick="startQuiz()">Play Again 🔄</button>
         <br>
         <a href="index.html" class="back-btn" style="margin-top:16px;">← Learning Centre</a>
@@ -225,9 +236,12 @@ const ALL_FLAGS = [
 ];
 
 const TOTAL = 10;
+const STORAGE_KEY = 'ivaan_best_flags';
+const TIMER_SECS = 12;
 const PRAISE = ['🎉 Brilliant!','⭐ Correct!','🌟 Amazing!','🎊 Great job!','🏳️ Flag master!'];
 let score = 0, qnum = 0, locked = false;
 let questions = [], correct_answer;
+let timerInterval = null, timeLeft = TIMER_SECS;
 
 function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
@@ -239,8 +253,48 @@ function shuffle(arr) {
     return a;
 }
 
+function startTimer() {
+    clearTimer();
+    timeLeft = TIMER_SECS;
+    updateTimerBar();
+    timerInterval = setInterval(() => {
+        timeLeft -= 0.1;
+        if (timeLeft <= 0) { timeLeft = 0; updateTimerBar(); clearTimer(); timeUp(); }
+        else updateTimerBar();
+    }, 100);
+}
+function clearTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+function updateTimerBar() {
+    const pct = (timeLeft / TIMER_SECS) * 100;
+    const bar = document.getElementById('timer-bar');
+    bar.style.width = pct + '%';
+    document.getElementById('timer-num').textContent = Math.ceil(timeLeft);
+    bar.style.background = pct > 50 ? '#43e97b' : pct > 25 ? '#fda085' : '#dc3545';
+}
+function timeUp() {
+    if (locked) return;
+    locked = true;
+    const container = document.getElementById('options');
+    container.querySelectorAll('.option-btn').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === correct_answer) b.classList.add('correct');
+    });
+    document.getElementById('feedback').textContent = `⏰ Time's up! Answer: ${correct_answer}`;
+    qnum++;
+    setTimeout(qnum >= TOTAL ? showEnd : showQuestion, 1700);
+}
+function saveProgress() {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"best":0,"games":0}');
+    saved.games++;
+    const isNew = score > saved.best;
+    if (isNew) saved.best = score;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    return isNew;
+}
+
 function showQuestion() {
     locked = false;
+    startTimer();
     const q = questions[qnum];
     correct_answer = q.country;
 
@@ -265,6 +319,7 @@ function showQuestion() {
 function pick(btn, selected, container) {
     if (locked) return;
     locked = true;
+    clearTimer();
     container.querySelectorAll('.option-btn').forEach(b => {
         b.disabled = true;
         if (b.textContent === correct_answer) b.classList.add('correct');
@@ -283,6 +338,7 @@ function pick(btn, selected, container) {
 }
 
 function showEnd() {
+    clearTimer();
     document.getElementById('quiz-screen').style.display = 'none';
     document.getElementById('end-screen').style.display = 'block';
     const pct = Math.round(score / TOTAL * 100);
@@ -295,6 +351,11 @@ function showEnd() {
     document.getElementById('end-title').textContent = title;
     document.getElementById('final-score').textContent = `You got ${score} out of ${TOTAL}! (${pct}%)`;
     document.getElementById('stars-row').textContent = '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+    const isNewBest = saveProgress();
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const bestEl = document.getElementById('best-score');
+    if (isNewBest) { bestEl.textContent = '🏅 New Personal Best!'; bestEl.className = 'best-score new-best'; }
+    else { bestEl.textContent = `Personal Best: ${saved.best}/10`; bestEl.className = 'best-score'; }
 }
 
 function startQuiz() {
@@ -303,6 +364,7 @@ function startQuiz() {
     document.getElementById('score').textContent = 0;
     document.getElementById('quiz-screen').style.display = 'block';
     document.getElementById('end-screen').style.display = 'none';
+    clearTimer();
     showQuestion();
 }
 
