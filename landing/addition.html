@@ -122,7 +122,9 @@
 <script>
 const TOTAL = 10;
 const STORAGE_KEY = 'ivaan_best_addition';
-const TIMER_SECS = 10;
+const TIMER_SECS = (() => { const p = new URLSearchParams(window.location.search).get('timer'); return p ? parseInt(p) : 0; })();
+const HAS_TIMER = TIMER_SECS > 0;
+if (!HAS_TIMER) document.querySelector('.timer-wrap').style.display = 'none';
 const PRAISE = ['🎉 Brilliant!','⭐ Correct!','🌟 Amazing!','🎊 Great job!','👏 Superb!'];
 let score = 0, qnum = 0, locked = false;
 let correct_answer;
@@ -148,6 +150,7 @@ function makeOptions(correct) {
 }
 
 function startTimer() {
+    if (!HAS_TIMER) return;
     clearTimer();
     timeLeft = TIMER_SECS;
     updateTimerBar();
@@ -188,7 +191,7 @@ function saveProgress() {
 
 function showQuestion() {
     locked = false;
-    startTimer();
+    if (HAS_TIMER) startTimer();
     const a = randInt(1, 15);
     const b = randInt(1, 15);
     correct_answer = a + b;

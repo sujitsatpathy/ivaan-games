@@ -129,6 +129,15 @@
             if (el) el.textContent = `Best: ${saved.best}/10 · ${saved.games} played`;
         }
     });
+
+    // Forward timer setting to game links
+    const timer = localStorage.getItem('ivaan_timer');
+    if (timer) {
+        document.querySelectorAll('.card').forEach(card => {
+            const base = card.getAttribute('href').split('?')[0];
+            card.setAttribute('href', `${base}?timer=${timer}`);
+        });
+    }
     </script>
 </body>
 </html>

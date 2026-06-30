@@ -138,7 +138,9 @@
 
 const TOTAL = 10;
 const STORAGE_KEY = 'ivaan_best_nonverbal';
-const TIMER_SECS = 15;
+const TIMER_SECS = (() => { const p = new URLSearchParams(window.location.search).get('timer'); return p ? parseInt(p) : 0; })();
+const HAS_TIMER = TIMER_SECS > 0;
+if (!HAS_TIMER) document.querySelector('.timer-wrap').style.display = 'none';
 const PRAISE = ['🎉 Brilliant!','⭐ Correct!','🌟 Amazing!','🎊 Great job!','🧩 Pattern master!'];
 let score = 0, qnum = 0, locked = false;
 let questions = [], correct_answer;
@@ -155,6 +157,7 @@ function shuffle(arr) {
 }
 
 function startTimer() {
+    if (!HAS_TIMER) return;
     clearTimer();
     timeLeft = TIMER_SECS;
     updateTimerBar();
@@ -195,7 +198,7 @@ function saveProgress() {
 
 function showQuestion() {
     locked = false;
-    startTimer();
+    if (HAS_TIMER) startTimer();
     const q = questions[qnum];
     correct_answer = q.options[q.answer];
 
