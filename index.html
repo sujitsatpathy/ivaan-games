@@ -485,6 +485,7 @@
                 Timer:
             </span>
             <div class="timer-options">
+                <button class="timer-btn" data-time="off">Off</button>
                 <button class="timer-btn" data-time="5">5s</button>
                 <button class="timer-btn" data-time="10">10s</button>
                 <button class="timer-btn" data-time="15">15s</button>
@@ -591,7 +592,7 @@
         })();
 
         /* ── Timer selector ── */
-        let selectedTimer = localStorage.getItem('ivaan_timer') || null;
+        let selectedTimer = localStorage.getItem('ivaan_timer') || 'off';
         const timerBtns = document.querySelectorAll('.timer-btn');
         const hintEl = document.getElementById('timer-hint');
         const allCards = document.querySelectorAll('.card');
@@ -600,7 +601,7 @@
             timerBtns.forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.time === selectedTimer);
             });
-            if (selectedTimer) {
+            if (selectedTimer && selectedTimer !== 'off') {
                 hintEl.textContent = `⏱ ${selectedTimer} seconds per question`;
             } else {
                 hintEl.textContent = 'No timer — take your time!';
@@ -608,20 +609,18 @@
             // Update all card hrefs
             allCards.forEach(card => {
                 const base = card.getAttribute('href').split('?')[0];
-                card.setAttribute('href', selectedTimer ? `${base}?timer=${selectedTimer}` : base);
+                if (selectedTimer && selectedTimer !== 'off') {
+                    card.setAttribute('href', `${base}?timer=${selectedTimer}`);
+                } else {
+                    card.setAttribute('href', base);
+                }
             });
         }
 
         timerBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                if (selectedTimer === btn.dataset.time) {
-                    // Deselect = no timer
-                    selectedTimer = null;
-                    localStorage.removeItem('ivaan_timer');
-                } else {
-                    selectedTimer = btn.dataset.time;
-                    localStorage.setItem('ivaan_timer', selectedTimer);
-                }
+                selectedTimer = btn.dataset.time;
+                localStorage.setItem('ivaan_timer', selectedTimer);
                 updateTimerUI();
             });
         });
