@@ -3,105 +3,524 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌟 Ivaan's Learning Centre</title>
+    <title>Ivaan's Learning Centre — Fun Quizzes & Brain Games</title>
+    <meta name="description" content="Interactive learning games for kids: multiplication, addition, subtraction, world capitals, verbal reasoning, and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            padding: 30px 20px;
-            color: white;
+        /* ───────── Reset & Base ───────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-deep:    #0b0e1a;
+            --bg-mid:     #111633;
+            --bg-accent:  #1a2352;
+            --surface:    rgba(255, 255, 255, 0.05);
+            --surface-hi: rgba(255, 255, 255, 0.10);
+            --border:     rgba(255, 255, 255, 0.08);
+            --text:       #f0f2ff;
+            --text-muted: rgba(240, 242, 255, 0.55);
+            --gold:       #fbbf24;
+            --gold-soft:  rgba(251, 191, 36, 0.15);
+            --radius:     20px;
+            --ease:       cubic-bezier(.4, 0, .2, 1);
         }
-        .header { text-align: center; margin-bottom: 40px; }
-        h1 { font-size: 40px; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); margin-bottom: 10px; }
-        .subtitle { font-size: 20px; color: rgba(255,255,255,0.7); }
-        .stars { font-size: 28px; letter-spacing: 4px; margin: 10px 0; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-deep);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* ───────── Ambient Background ───────── */
+        .ambient {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .ambient .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.35;
+            animation: drift 18s ease-in-out infinite alternate;
+        }
+
+        .ambient .orb:nth-child(1) {
+            width: 520px; height: 520px;
+            background: radial-gradient(circle, #6366f1, transparent 70%);
+            top: -10%; left: -8%;
+            animation-duration: 22s;
+        }
+        .ambient .orb:nth-child(2) {
+            width: 440px; height: 440px;
+            background: radial-gradient(circle, #06b6d4, transparent 70%);
+            bottom: -12%; right: -6%;
+            animation-duration: 26s;
+            animation-delay: -6s;
+        }
+        .ambient .orb:nth-child(3) {
+            width: 360px; height: 360px;
+            background: radial-gradient(circle, #a855f7, transparent 70%);
+            top: 40%; left: 55%;
+            animation-duration: 20s;
+            animation-delay: -10s;
+        }
+
+        @keyframes drift {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(60px, -40px) scale(1.12); }
+        }
+
+        /* ───────── Particles ───────── */
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
+            animation: float-up linear infinite;
+        }
+
+        @keyframes float-up {
+            0%   { transform: translateY(0) scale(1); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
+        }
+
+        /* ───────── Layout ───────── */
+        .page {
+            position: relative;
+            z-index: 1;
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 48px 24px 60px;
+        }
+
+        /* ───────── Header ───────── */
+        .hero {
+            text-align: center;
+            margin-bottom: 56px;
+            animation: fade-in-down 0.8s var(--ease) both;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--gold-soft);
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            margin-bottom: 20px;
+            letter-spacing: 0.02em;
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 5.5vw, 52px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 14px;
+            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: clamp(16px, 2.2vw, 19px);
+            color: var(--text-muted);
+            font-weight: 400;
+            max-width: 460px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ───────── Section Labels ───────── */
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-left: 4px;
+            animation: fade-in-up 0.6s var(--ease) both;
+        }
+
+        .section-label .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .section-label span {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .section-group {
+            margin-bottom: 44px;
+        }
+
+        /* ───────── Card Grid ───────── */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            max-width: 960px;
-            margin: 0 auto 40px;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
         }
+
+        /* ───────── Cards ───────── */
         .card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 22px;
-            padding: 32px 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
             text-decoration: none;
-            color: white;
-            transition: all 0.25s;
+            color: var(--text);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 22px 28px;
+            transition: transform 0.35s var(--ease),
+                        box-shadow 0.35s var(--ease),
+                        border-color 0.35s var(--ease),
+                        background 0.35s var(--ease);
+            overflow: hidden;
+            animation: fade-in-up 0.6s var(--ease) both;
         }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius);
+            opacity: 0;
+            transition: opacity 0.35s var(--ease);
+            pointer-events: none;
+        }
+
         .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+            transform: translateY(-8px);
+            box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5);
         }
-        .card .icon { font-size: 60px; margin-bottom: 14px; display: block; }
-        .card .title { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
-        .card .desc { font-size: 14px; color: rgba(255,255,255,0.65); }
-        .card.math   { border-color: rgba(255,200,50,0.5); }
-        .card.math:hover { background: rgba(255,200,50,0.2); }
-        .card.world  { border-color: rgba(80,220,255,0.5); }
-        .card.world:hover { background: rgba(80,220,255,0.18); }
-        .card.verbal { border-color: rgba(140,255,140,0.5); }
-        .card.verbal:hover { background: rgba(140,255,140,0.15); }
-        .card.pattern { border-color: rgba(255,140,255,0.5); }
-        .card.pattern:hover { background: rgba(255,140,255,0.15); }
-        footer { text-align: center; margin-top: 10px; }
-        footer a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 14px; }
-        footer a:hover { color: rgba(255,255,255,0.7); }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* Card icon container */
+        .card-icon {
+            width: 72px; height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            font-size: 36px;
+            margin-bottom: 18px;
+            transition: transform 0.35s var(--ease);
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.1) rotate(-3deg);
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.45;
+            margin-bottom: 8px;
+        }
+
+        .card-badge {
+            display: none;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gold);
+            background: var(--gold-soft);
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-top: 4px;
+        }
+
+        .card-badge.visible {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ───── Math Cards (Amber) ───── */
+        .card.math .card-icon {
+            background: rgba(251, 191, 36, 0.12);
+            color: #fbbf24;
+        }
+        .card.math { border-color: rgba(251, 191, 36, 0.12); }
+        .card.math:hover { border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.06); }
+        .card.math::before { background: radial-gradient(ellipse at 50% 0%, rgba(251, 191, 36, 0.08), transparent 70%); }
+
+        /* ───── World Cards (Cyan) ───── */
+        .card.world .card-icon {
+            background: rgba(6, 182, 212, 0.12);
+            color: #22d3ee;
+        }
+        .card.world { border-color: rgba(6, 182, 212, 0.12); }
+        .card.world:hover { border-color: rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.06); }
+        .card.world::before { background: radial-gradient(ellipse at 50% 0%, rgba(6, 182, 212, 0.08), transparent 70%); }
+
+        /* ───── Verbal Cards (Emerald) ───── */
+        .card.verbal .card-icon {
+            background: rgba(52, 211, 153, 0.12);
+            color: #34d399;
+        }
+        .card.verbal { border-color: rgba(52, 211, 153, 0.12); }
+        .card.verbal:hover { border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.06); }
+        .card.verbal::before { background: radial-gradient(ellipse at 50% 0%, rgba(52, 211, 153, 0.08), transparent 70%); }
+
+        /* ───── Pattern Cards (Violet) ───── */
+        .card.pattern .card-icon {
+            background: rgba(167, 139, 250, 0.12);
+            color: #a78bfa;
+        }
+        .card.pattern { border-color: rgba(167, 139, 250, 0.12); }
+        .card.pattern:hover { border-color: rgba(167, 139, 250, 0.3); background: rgba(167, 139, 250, 0.06); }
+        .card.pattern::before { background: radial-gradient(ellipse at 50% 0%, rgba(167, 139, 250, 0.08), transparent 70%); }
+
+        /* ───────── Stagger delays ───────── */
+        .card:nth-child(1) { animation-delay: 0.08s; }
+        .card:nth-child(2) { animation-delay: 0.16s; }
+        .card:nth-child(3) { animation-delay: 0.24s; }
+        .card:nth-child(4) { animation-delay: 0.32s; }
+
+        .section-group:nth-child(2) .section-label { animation-delay: 0.15s; }
+        .section-group:nth-child(3) .section-label { animation-delay: 0.3s; }
+        .section-group:nth-child(4) .section-label { animation-delay: 0.45s; }
+
+        .section-group:nth-child(2) .card { animation-delay: calc(0.2s + var(--i, 0) * 0.08s); }
+        .section-group:nth-child(3) .card { animation-delay: calc(0.35s + var(--i, 0) * 0.08s); }
+        .section-group:nth-child(4) .card { animation-delay: calc(0.5s + var(--i, 0) * 0.08s); }
+
+        /* ───────── Footer ───────── */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            animation: fade-in-up 0.6s var(--ease) 0.7s both;
+        }
+
+        .footer-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            transition: all 0.3s var(--ease);
+        }
+
+        .footer-link:hover {
+            color: var(--text);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: var(--surface-hi);
+        }
+
+        /* ───────── Animations ───────── */
+        @keyframes fade-in-down {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ───────── Responsive ───────── */
+        @media (max-width: 640px) {
+            .page { padding: 32px 16px 48px; }
+            .hero { margin-bottom: 40px; }
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+            .card { padding: 28px 16px 22px; }
+            .card-icon { width: 60px; height: 60px; font-size: 28px; border-radius: 14px; }
+            .card-title { font-size: 15px; }
+            .section-group { margin-bottom: 36px; }
+        }
+
+        @media (max-width: 380px) {
+            .grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🌟 Ivaan's Learning Centre</h1>
-        <div class="stars">⭐ ⭐ ⭐ ⭐ ⭐</div>
-        <p class="subtitle">Tap a subject to start learning! 🚀</p>
+    <!-- Ambient glow orbs -->
+    <div class="ambient" aria-hidden="true">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
     </div>
 
-    <div class="grid">
-        <a href="landing/multiplication.html" class="card math">
-            <span class="icon">✖️</span>
-            <div class="title">Multiplication</div>
-            <div class="desc">Times tables fun!</div>
-        </a>
-        <a href="landing/addition.html" class="card math">
-            <span class="icon">➕</span>
-            <div class="title">Addition</div>
-            <div class="desc">Adding numbers</div>
-        </a>
-        <a href="landing/subtraction.html" class="card math">
-            <span class="icon">➖</span>
-            <div class="title">Subtraction</div>
-            <div class="desc">Taking away</div>
-        </a>
-        <a href="landing/country-capitals.html" class="card world">
-            <span class="icon">🌍</span>
-            <div class="title">Country Capitals</div>
-            <div class="desc">World capitals quiz</div>
-        </a>
-        <a href="landing/verbal-reasoning.html" class="card verbal">
-            <span class="icon">📝</span>
-            <div class="title">Verbal Reasoning</div>
-            <div class="desc">Words & language</div>
-        </a>
-        <a href="landing/non-verbal-reasoning.html" class="card pattern">
-            <span class="icon">🔷</span>
-            <div class="title">Non-Verbal Reasoning</div>
-            <div class="desc">Patterns & sequences</div>
-        </a>
-        <a href="landing/flags.html" class="card world">
-            <span class="icon">🏳️</span>
-            <div class="title">Flag Quiz</div>
-            <div class="desc">Guess the country!</div>
-        </a>
+    <!-- Floating particles -->
+    <div class="particles" id="particles" aria-hidden="true"></div>
+
+    <div class="page">
+        <!-- Hero Header -->
+        <header class="hero" id="hero">
+            <div class="hero-badge">✦ Learning made fun</div>
+            <h1>Ivaan's Learning Centre</h1>
+            <p>Pick a subject and start your challenge. Track your scores and beat your best!</p>
+        </header>
+
+        <!-- Mathematics -->
+        <section class="section-group">
+            <div class="section-label">
+                <div class="dot" style="background: #fbbf24;"></div>
+                <span>Mathematics</span>
+            </div>
+            <div class="grid">
+                <a href="landing/multiplication.html" class="card math" style="--i:0" id="card-multiplication">
+                    <div class="card-icon">✖️</div>
+                    <div class="card-title">Multiplication</div>
+                    <div class="card-desc">Times tables fun!</div>
+                    <div class="card-badge" id="best-multiplication"></div>
+                </a>
+                <a href="landing/addition.html" class="card math" style="--i:1" id="card-addition">
+                    <div class="card-icon">➕</div>
+                    <div class="card-title">Addition</div>
+                    <div class="card-desc">Adding numbers</div>
+                    <div class="card-badge" id="best-addition"></div>
+                </a>
+                <a href="landing/subtraction.html" class="card math" style="--i:2" id="card-subtraction">
+                    <div class="card-icon">➖</div>
+                    <div class="card-title">Subtraction</div>
+                    <div class="card-desc">Taking away</div>
+                    <div class="card-badge" id="best-subtraction"></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- World Knowledge -->
+        <section class="section-group">
+            <div class="section-label">
+                <div class="dot" style="background: #22d3ee;"></div>
+                <span>World Knowledge</span>
+            </div>
+            <div class="grid">
+                <a href="landing/country-capitals.html" class="card world" style="--i:0" id="card-capitals">
+                    <div class="card-icon">🌍</div>
+                    <div class="card-title">Country Capitals</div>
+                    <div class="card-desc">World capitals quiz</div>
+                    <div class="card-badge" id="best-capitals"></div>
+                </a>
+                <a href="landing/flags.html" class="card world" style="--i:1" id="card-flags">
+                    <div class="card-icon">🏳️</div>
+                    <div class="card-title">Flag Quiz</div>
+                    <div class="card-desc">Guess the country!</div>
+                    <div class="card-badge" id="best-flags"></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Reasoning -->
+        <section class="section-group">
+            <div class="section-label">
+                <div class="dot" style="background: #34d399;"></div>
+                <span>Reasoning</span>
+            </div>
+            <div class="grid">
+                <a href="landing/verbal-reasoning.html" class="card verbal" style="--i:0" id="card-verbal">
+                    <div class="card-icon">📝</div>
+                    <div class="card-title">Verbal Reasoning</div>
+                    <div class="card-desc">Words &amp; language</div>
+                    <div class="card-badge" id="best-verbal"></div>
+                </a>
+                <a href="landing/non-verbal-reasoning.html" class="card pattern" style="--i:1" id="card-nonverbal">
+                    <div class="card-icon">🔷</div>
+                    <div class="card-title">Non-Verbal Reasoning</div>
+                    <div class="card-desc">Patterns &amp; sequences</div>
+                    <div class="card-badge" id="best-nonverbal"></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <a href="index.html" class="footer-link">
+                <span>↻</span> Refresh page
+            </a>
+        </footer>
     </div>
 
-    <footer>
-        <a href="index.html">← Back to main games menu</a>
-    </footer>
+    <script>
+        /* ── Floating particles ── */
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            const count = window.innerWidth < 640 ? 20 : 40;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = (100 + Math.random() * 20) + '%';
+                p.style.width = p.style.height = (1.5 + Math.random() * 2.5) + 'px';
+                p.style.animationDuration = (12 + Math.random() * 18) + 's';
+                p.style.animationDelay = (Math.random() * 15) + 's';
+                container.appendChild(p);
+            }
+        })();
+
+        /* ── Best scores ── */
+        const GAME_KEYS = [
+            { id: 'best-multiplication', key: 'ivaan_best_multiplication' },
+            { id: 'best-addition',       key: 'ivaan_best_addition' },
+            { id: 'best-subtraction',    key: 'ivaan_best_subtraction' },
+            { id: 'best-capitals',       key: 'ivaan_best_capitals' },
+            { id: 'best-verbal',         key: 'ivaan_best_verbal' },
+            { id: 'best-nonverbal',      key: 'ivaan_best_nonverbal' },
+            { id: 'best-flags',          key: 'ivaan_best_flags' },
+        ];
+
+        GAME_KEYS.forEach(({ id, key }) => {
+            const saved = JSON.parse(localStorage.getItem(key) || 'null');
+            if (saved && saved.games > 0) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = `★ Best: ${saved.best}/10 · ${saved.games} played`;
+                    el.classList.add('visible');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
