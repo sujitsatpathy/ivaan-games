@@ -7,188 +7,281 @@
     <meta name="description" content="Interactive learning games for kids: multiplication, addition, subtraction, world capitals, verbal reasoning, and more.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ───────── Reset & Base ───────── */
+        /* ───── Reset ───── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg-deep:    #0b0e1a;
-            --bg-mid:     #111633;
-            --bg-accent:  #1a2352;
-            --surface:    rgba(255, 255, 255, 0.05);
-            --surface-hi: rgba(255, 255, 255, 0.10);
-            --border:     rgba(255, 255, 255, 0.08);
-            --text:       #f0f2ff;
-            --text-muted: rgba(240, 242, 255, 0.55);
-            --gold:       #fbbf24;
-            --gold-soft:  rgba(251, 191, 36, 0.15);
-            --radius:     20px;
-            --ease:       cubic-bezier(.4, 0, .2, 1);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --ease: cubic-bezier(.25, .1, .25, 1);
+            --ease-out: cubic-bezier(0, 0, .25, 1);
         }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--bg-deep);
-            min-height: 100vh;
-            color: var(--text);
+            font-family: var(--font);
+            background: #000;
+            color: #1d1d1f;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* ───────── Ambient Background ───────── */
-        .ambient {
+        /* ───── Navigation ───── */
+        nav {
             position: fixed;
-            inset: 0;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .ambient .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.35;
-            animation: drift 18s ease-in-out infinite alternate;
-        }
-
-        .ambient .orb:nth-child(1) {
-            width: 520px; height: 520px;
-            background: radial-gradient(circle, #6366f1, transparent 70%);
-            top: -10%; left: -8%;
-            animation-duration: 22s;
-        }
-        .ambient .orb:nth-child(2) {
-            width: 440px; height: 440px;
-            background: radial-gradient(circle, #06b6d4, transparent 70%);
-            bottom: -12%; right: -6%;
-            animation-duration: 26s;
-            animation-delay: -6s;
-        }
-        .ambient .orb:nth-child(3) {
-            width: 360px; height: 360px;
-            background: radial-gradient(circle, #a855f7, transparent 70%);
-            top: 40%; left: 55%;
-            animation-duration: 20s;
-            animation-delay: -10s;
-        }
-
-        @keyframes drift {
-            0%   { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(60px, -40px) scale(1.12); }
-        }
-
-        /* ───────── Particles ───────── */
-        .particles {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            width: 3px; height: 3px;
-            background: rgba(255, 255, 255, 0.25);
-            border-radius: 50%;
-            animation: float-up linear infinite;
-        }
-
-        @keyframes float-up {
-            0%   { transform: translateY(0) scale(1); opacity: 0; }
-            10%  { opacity: 1; }
-            90%  { opacity: 1; }
-            100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
-        }
-
-        /* ───────── Layout ───────── */
-        .page {
-            position: relative;
-            z-index: 1;
-            max-width: 1040px;
-            margin: 0 auto;
-            padding: 48px 24px 60px;
-        }
-
-        /* ───────── Header ───────── */
-        .hero {
-            text-align: center;
-            margin-bottom: 56px;
-            animation: fade-in-down 0.8s var(--ease) both;
-        }
-
-        .hero-badge {
-            display: inline-flex;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            height: 48px;
+            display: flex;
             align-items: center;
-            gap: 6px;
-            background: var(--gold-soft);
-            color: var(--gold);
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.82);
             font-size: 13px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-logo {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .nav-content span {
+            opacity: 0.65;
+        }
+
+        /* ───── Hero Section ───── */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 24px 80px;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 80% 60% at 50% 40%, rgba(100, 80, 240, 0.15), transparent),
+                radial-gradient(ellipse 60% 50% at 30% 60%, rgba(56, 189, 248, 0.08), transparent),
+                radial-gradient(ellipse 60% 50% at 70% 70%, rgba(251, 191, 36, 0.06), transparent);
+            pointer-events: none;
+        }
+
+        .hero-eyebrow {
+            position: relative;
+            font-size: 17px;
             font-weight: 600;
-            padding: 6px 16px;
-            border-radius: 100px;
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            margin-bottom: 20px;
-            letter-spacing: 0.02em;
+            color: rgba(255, 255, 255, 0.55);
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+            animation: hero-up 1s var(--ease-out) 0.1s both;
         }
 
         .hero h1 {
-            font-size: clamp(32px, 5.5vw, 52px);
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-            margin-bottom: 14px;
-            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 50%, #818cf8 100%);
+            position: relative;
+            font-size: clamp(48px, 10vw, 96px);
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1.0;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.7) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: hero-up 1s var(--ease-out) 0.2s both;
         }
 
-        .hero p {
-            font-size: clamp(16px, 2.2vw, 19px);
-            color: var(--text-muted);
+        .hero-sub {
+            position: relative;
+            font-size: clamp(17px, 2.5vw, 21px);
+            color: rgba(255, 255, 255, 0.45);
             font-weight: 400;
-            max-width: 460px;
-            margin: 0 auto;
-            line-height: 1.6;
+            max-width: 500px;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            animation: hero-up 1s var(--ease-out) 0.35s both;
         }
 
-        /* ───────── Section Labels ───────── */
-        .section-label {
+        /* Timer controls in hero */
+        .timer-controls {
+            position: relative;
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-left: 4px;
-            animation: fade-in-up 0.6s var(--ease) both;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: hero-up 1s var(--ease-out) 0.5s both;
         }
 
-        .section-label .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
+        .timer-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .section-label span {
+        .timer-label svg {
+            width: 15px; height: 15px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .timer-options {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 100px;
+            padding: 3px;
+        }
+
+        .timer-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font);
             font-size: 13px;
             font-weight: 600;
+            padding: 7px 16px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.3s var(--ease);
+            outline: none;
+        }
+
+        .timer-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .timer-btn.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .timer-hint {
+            width: 100%;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            margin-top: 12px;
+            min-height: 18px;
+            animation: hero-up 1s var(--ease-out) 0.6s both;
+        }
+
+        .scroll-cue {
+            position: relative;
+            margin-top: 48px;
+            animation: hero-up 1s var(--ease-out) 0.7s both;
+        }
+
+        .scroll-cue svg {
+            width: 28px; height: 28px;
+            stroke: rgba(255, 255, 255, 0.2);
+            fill: none;
+            stroke-width: 2;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        @keyframes hero-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ───── Section Tiles (Apple-style stacked panels) ───── */
+        .tile {
+            padding: 80px 24px 88px;
+            text-align: center;
+        }
+
+        .tile-inner {
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        .tile-eyebrow {
+            font-size: 14px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
         }
 
-        .section-group {
-            margin-bottom: 44px;
+        .tile h2 {
+            font-size: clamp(36px, 6vw, 56px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
+            margin-bottom: 10px;
         }
 
-        /* ───────── Card Grid ───────── */
-        .grid {
+        .tile-subtitle {
+            font-size: clamp(16px, 2vw, 21px);
+            font-weight: 400;
+            max-width: 480px;
+            margin: 0 auto 48px;
+            line-height: 1.45;
+        }
+
+        /* Section themes */
+        .tile.maths {
+            background: linear-gradient(180deg, #fef9ef 0%, #fff7e0 100%);
+            color: #1d1d1f;
+        }
+        .tile.maths .tile-eyebrow { color: #c87a1a; }
+        .tile.maths .tile-subtitle { color: #6e6e73; }
+
+        .tile.world {
+            background: linear-gradient(180deg, #eef9fc 0%, #e0f5fa 100%);
+            color: #1d1d1f;
+        }
+        .tile.world .tile-eyebrow { color: #0b7a8a; }
+        .tile.world .tile-subtitle { color: #6e6e73; }
+
+        .tile.reasoning {
+            background: linear-gradient(180deg, #f0fdf4 0%, #e3fbe9 100%);
+            color: #1d1d1f;
+        }
+        .tile.reasoning .tile-eyebrow { color: #15803d; }
+        .tile.reasoning .tile-subtitle { color: #6e6e73; }
+
+        /* ───── Card Grid ───── */
+        .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        /* ───────── Cards ───────── */
+        /* ───── Cards ───── */
         .card {
             position: relative;
             display: flex;
@@ -196,79 +289,60 @@
             align-items: center;
             text-align: center;
             text-decoration: none;
-            color: var(--text);
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 36px 22px 28px;
-            transition: transform 0.35s var(--ease),
-                        box-shadow 0.35s var(--ease),
-                        border-color 0.35s var(--ease),
-                        background 0.35s var(--ease);
-            overflow: hidden;
-            animation: fade-in-up 0.6s var(--ease) both;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius);
-            opacity: 0;
-            transition: opacity 0.35s var(--ease);
-            pointer-events: none;
+            color: #1d1d1f;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 44px 28px 36px;
+            transition: transform 0.4s var(--ease),
+                        box-shadow 0.4s var(--ease);
+            cursor: pointer;
         }
 
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .card:hover::before {
-            opacity: 1;
+            transform: scale(1.03) translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
         }
 
         .card:active {
-            transform: translateY(-2px) scale(0.98);
+            transform: scale(0.98);
         }
 
-        /* Card icon container */
         .card-icon {
-            width: 72px; height: 72px;
+            width: 80px; height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 18px;
-            font-size: 36px;
-            margin-bottom: 18px;
-            transition: transform 0.35s var(--ease);
+            border-radius: 22px;
+            font-size: 40px;
+            margin-bottom: 20px;
+            transition: transform 0.4s var(--ease);
         }
 
         .card:hover .card-icon {
-            transform: scale(1.1) rotate(-3deg);
+            transform: scale(1.12);
         }
 
         .card-title {
-            font-size: 17px;
+            font-size: 22px;
             font-weight: 700;
+            letter-spacing: -0.02em;
             margin-bottom: 6px;
-            letter-spacing: -0.01em;
         }
 
         .card-desc {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.45;
-            margin-bottom: 8px;
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.4;
+            margin-bottom: 10px;
         }
 
         .card-badge {
             display: none;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
-            color: var(--gold);
-            background: var(--gold-soft);
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 100px;
             margin-top: 4px;
         }
@@ -279,210 +353,125 @@
             gap: 4px;
         }
 
-        /* ───── Math Cards (Amber) ───── */
-        .card.math .card-icon {
-            background: rgba(251, 191, 36, 0.12);
-            color: #fbbf24;
-        }
-        .card.math { border-color: rgba(251, 191, 36, 0.12); }
-        .card.math:hover { border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.06); }
-        .card.math::before { background: radial-gradient(ellipse at 50% 0%, rgba(251, 191, 36, 0.08), transparent 70%); }
+        /* Card colour themes */
+        .card.math .card-icon { background: #fef3c7; }
+        .card.math .card-badge { color: #92400e; background: #fef3c7; }
 
-        /* ───── World Cards (Cyan) ───── */
-        .card.world .card-icon {
-            background: rgba(6, 182, 212, 0.12);
-            color: #22d3ee;
-        }
-        .card.world { border-color: rgba(6, 182, 212, 0.12); }
-        .card.world:hover { border-color: rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.06); }
-        .card.world::before { background: radial-gradient(ellipse at 50% 0%, rgba(6, 182, 212, 0.08), transparent 70%); }
+        .card.world .card-icon { background: #cffafe; }
+        .card.world .card-badge { color: #155e75; background: #cffafe; }
 
-        /* ───── Verbal Cards (Emerald) ───── */
-        .card.verbal .card-icon {
-            background: rgba(52, 211, 153, 0.12);
-            color: #34d399;
-        }
-        .card.verbal { border-color: rgba(52, 211, 153, 0.12); }
-        .card.verbal:hover { border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.06); }
-        .card.verbal::before { background: radial-gradient(ellipse at 50% 0%, rgba(52, 211, 153, 0.08), transparent 70%); }
+        .card.verbal .card-icon { background: #d1fae5; }
+        .card.verbal .card-badge { color: #065f46; background: #d1fae5; }
 
-        /* ───── Pattern Cards (Violet) ───── */
-        .card.pattern .card-icon {
-            background: rgba(167, 139, 250, 0.12);
-            color: #a78bfa;
-        }
-        .card.pattern { border-color: rgba(167, 139, 250, 0.12); }
-        .card.pattern:hover { border-color: rgba(167, 139, 250, 0.3); background: rgba(167, 139, 250, 0.06); }
-        .card.pattern::before { background: radial-gradient(ellipse at 50% 0%, rgba(167, 139, 250, 0.08), transparent 70%); }
+        .card.pattern .card-icon { background: #ede9fe; }
+        .card.pattern .card-badge { color: #5b21b6; background: #ede9fe; }
 
-        /* ───────── Stagger delays ───────── */
-        .card:nth-child(1) { animation-delay: 0.08s; }
-        .card:nth-child(2) { animation-delay: 0.16s; }
-        .card:nth-child(3) { animation-delay: 0.24s; }
-        .card:nth-child(4) { animation-delay: 0.32s; }
-
-        .section-group:nth-child(2) .section-label { animation-delay: 0.15s; }
-        .section-group:nth-child(3) .section-label { animation-delay: 0.3s; }
-        .section-group:nth-child(4) .section-label { animation-delay: 0.45s; }
-
-        .section-group:nth-child(2) .card { animation-delay: calc(0.2s + var(--i, 0) * 0.08s); }
-        .section-group:nth-child(3) .card { animation-delay: calc(0.35s + var(--i, 0) * 0.08s); }
-        .section-group:nth-child(4) .card { animation-delay: calc(0.5s + var(--i, 0) * 0.08s); }
-
-        /* ───────── Footer ───────── */
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            animation: fade-in-up 0.6s var(--ease) 0.7s both;
-        }
-
-        .footer-link {
+        /* ───── CTA link beneath cards ───── */
+        .tile-cta {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 13px;
+            gap: 4px;
+            margin-top: 32px;
+            font-size: 17px;
             font-weight: 500;
-            padding: 10px 20px;
-            border-radius: 100px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            transition: all 0.3s var(--ease);
+            text-decoration: none;
+            transition: gap 0.3s var(--ease);
         }
 
-        .footer-link:hover {
-            color: var(--text);
-            border-color: rgba(255, 255, 255, 0.2);
-            background: var(--surface-hi);
-        }
+        .tile.maths .tile-cta { color: #c87a1a; }
+        .tile.world .tile-cta { color: #0b7a8a; }
+        .tile.reasoning .tile-cta { color: #15803d; }
 
-        /* ───────── Animations ───────── */
-        @keyframes fade-in-down {
-            from { opacity: 0; transform: translateY(-20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
+        .tile-cta:hover { gap: 8px; }
 
-        @keyframes fade-in-up {
-            from { opacity: 0; transform: translateY(24px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ───────── Responsive ───────── */
-        /* ───────── Timer Selector ───────── */
-        .timer-selector {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 48px;
-            animation: fade-in-up 0.6s var(--ease) 0.25s both;
-        }
-
-        .timer-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-right: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .timer-label svg {
-            width: 16px; height: 16px;
+        .tile-cta svg {
+            width: 18px; height: 18px;
             stroke: currentColor;
             fill: none;
-            stroke-width: 2;
+            stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
         }
 
-        .timer-options {
-            display: flex;
-            gap: 6px;
-        }
-
-        .timer-btn {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            font-family: 'Inter', system-ui, sans-serif;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 8px 16px;
-            border-radius: 100px;
-            cursor: pointer;
-            transition: all 0.25s var(--ease);
-            outline: none;
-        }
-
-        .timer-btn:hover {
-            color: var(--text);
-            border-color: rgba(255, 255, 255, 0.2);
-            background: var(--surface-hi);
-        }
-
-        .timer-btn.active {
-            background: rgba(99, 102, 241, 0.2);
-            border-color: rgba(99, 102, 241, 0.5);
-            color: #a5b4fc;
-            box-shadow: 0 0 16px rgba(99, 102, 241, 0.15);
-        }
-
-        .timer-hint {
-            font-size: 12px;
-            color: var(--text-muted);
+        /* ───── Footer ───── */
+        .site-footer {
+            background: #f5f5f7;
+            padding: 36px 24px;
             text-align: center;
-            margin-top: -38px;
-            margin-bottom: 44px;
-            animation: fade-in-up 0.6s var(--ease) 0.3s both;
-            opacity: 0.7;
-            min-height: 18px;
+            border-top: 1px solid #d2d2d7;
         }
 
-        @media (max-width: 640px) {
-            .page { padding: 32px 16px 48px; }
-            .hero { margin-bottom: 40px; }
-            .grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-            .card { padding: 28px 16px 22px; }
-            .card-icon { width: 60px; height: 60px; font-size: 28px; border-radius: 14px; }
-            .card-title { font-size: 15px; }
-            .section-group { margin-bottom: 36px; }
-            .timer-selector { gap: 8px; margin-bottom: 40px; }
-            .timer-hint { margin-top: -30px; margin-bottom: 36px; }
+        .site-footer p {
+            font-size: 13px;
+            color: #86868b;
+            line-height: 1.6;
         }
 
-        @media (max-width: 380px) {
-            .grid { grid-template-columns: 1fr; }
+        .site-footer a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .site-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ───── Scroll-reveal animation ───── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+
+        /* ───── Responsive ───── */
+        @media (max-width: 734px) {
+            .tile { padding: 56px 20px 64px; }
+            .tile h2 { margin-bottom: 6px; }
+            .tile-subtitle { margin-bottom: 36px; }
+            .card-grid { grid-template-columns: 1fr; gap: 16px; max-width: 400px; }
+            .card { padding: 36px 24px 28px; border-radius: 20px; }
+            .card-icon { width: 68px; height: 68px; font-size: 34px; border-radius: 18px; }
+            .card-title { font-size: 19px; }
+            .hero { min-height: 90vh; padding: 80px 20px 60px; }
+            .timer-options { gap: 2px; padding: 2px; }
+            .timer-btn { padding: 6px 12px; font-size: 12px; }
+            nav { height: 44px; }
+        }
+
+        @media (min-width: 735px) and (max-width: 1068px) {
+            .card-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
-    <!-- Ambient glow orbs -->
-    <div class="ambient" aria-hidden="true">
-        <div class="orb"></div>
-        <div class="orb"></div>
-        <div class="orb"></div>
-    </div>
 
-    <!-- Floating particles -->
-    <div class="particles" id="particles" aria-hidden="true"></div>
+    <!-- ─── Nav bar ─── -->
+    <nav>
+        <div class="nav-content">
+            <span class="nav-logo">📚</span>
+            Ivaan's Learning Centre
+        </div>
+    </nav>
 
-    <div class="page">
-        <!-- Hero Header -->
-        <header class="hero" id="hero">
-            <div class="hero-badge">✦ Learning made fun</div>
-            <h1>Ivaan's Learning Centre</h1>
-            <p>Pick a subject and start your challenge. Track your scores and beat your best!</p>
-        </header>
+    <!-- ─── Hero ─── -->
+    <section class="hero" id="hero">
+        <p class="hero-eyebrow">Learning made fun.</p>
+        <h1>Ivaan's<br>Learning Centre</h1>
+        <p class="hero-sub">Interactive quizzes for maths, world knowledge, and reasoning. Pick a challenge and beat your best score.</p>
 
-        <!-- Timer Selector -->
-        <div class="timer-selector" id="timer-selector">
+        <div class="timer-controls" id="timer-selector">
             <span class="timer-label">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="5" x2="12" y2="3"/><line x1="9" y1="2" x2="15" y2="2"/></svg>
-                Timer:
+                Timer
             </span>
             <div class="timer-options">
                 <button class="timer-btn" data-time="off">Off</button>
@@ -494,102 +483,107 @@
         </div>
         <div class="timer-hint" id="timer-hint">No timer — take your time!</div>
 
-        <!-- Mathematics -->
-        <section class="section-group">
-            <div class="section-label">
-                <div class="dot" style="background: #fbbf24;"></div>
-                <span>Mathematics</span>
-            </div>
-            <div class="grid">
-                <a href="landing/multiplication.html" class="card math" style="--i:0" id="card-multiplication">
+        <div class="scroll-cue" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+    </section>
+
+    <!-- ─── Mathematics ─── -->
+    <section class="tile maths">
+        <div class="tile-inner">
+            <p class="tile-eyebrow reveal">Mathematics</p>
+            <h2 class="reveal reveal-delay-1">Numbers made easy.</h2>
+            <p class="tile-subtitle reveal reveal-delay-2">Master times tables, sharpen your addition, and conquer subtraction challenges.</p>
+
+            <div class="card-grid">
+                <a href="landing/multiplication.html" class="card math reveal" id="card-multiplication">
                     <div class="card-icon">✖️</div>
                     <div class="card-title">Multiplication</div>
                     <div class="card-desc">Times tables fun!</div>
                     <div class="card-badge" id="best-multiplication"></div>
                 </a>
-                <a href="landing/addition.html" class="card math" style="--i:1" id="card-addition">
+                <a href="landing/addition.html" class="card math reveal reveal-delay-1" id="card-addition">
                     <div class="card-icon">➕</div>
                     <div class="card-title">Addition</div>
                     <div class="card-desc">Adding numbers</div>
                     <div class="card-badge" id="best-addition"></div>
                 </a>
-                <a href="landing/subtraction.html" class="card math" style="--i:2" id="card-subtraction">
+                <a href="landing/subtraction.html" class="card math reveal reveal-delay-2" id="card-subtraction">
                     <div class="card-icon">➖</div>
                     <div class="card-title">Subtraction</div>
                     <div class="card-desc">Taking away</div>
                     <div class="card-badge" id="best-subtraction"></div>
                 </a>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- World Knowledge -->
-        <section class="section-group">
-            <div class="section-label">
-                <div class="dot" style="background: #22d3ee;"></div>
-                <span>World Knowledge</span>
-            </div>
-            <div class="grid">
-                <a href="landing/country-capitals.html" class="card world" style="--i:0" id="card-capitals">
+    <!-- ─── World Knowledge ─── -->
+    <section class="tile world">
+        <div class="tile-inner">
+            <p class="tile-eyebrow reveal">World Knowledge</p>
+            <h2 class="reveal reveal-delay-1">Explore the globe.</h2>
+            <p class="tile-subtitle reveal reveal-delay-2">Test your knowledge of world capitals and identify flags from every continent.</p>
+
+            <div class="card-grid">
+                <a href="landing/country-capitals.html" class="card world reveal" id="card-capitals">
                     <div class="card-icon">🌍</div>
                     <div class="card-title">Country Capitals</div>
                     <div class="card-desc">World capitals quiz</div>
                     <div class="card-badge" id="best-capitals"></div>
                 </a>
-                <a href="landing/flags.html" class="card world" style="--i:1" id="card-flags">
+                <a href="landing/flags.html" class="card world reveal reveal-delay-1" id="card-flags">
                     <div class="card-icon">🏳️</div>
                     <div class="card-title">Flag Quiz</div>
                     <div class="card-desc">Guess the country!</div>
                     <div class="card-badge" id="best-flags"></div>
                 </a>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Reasoning -->
-        <section class="section-group">
-            <div class="section-label">
-                <div class="dot" style="background: #34d399;"></div>
-                <span>Reasoning</span>
-            </div>
-            <div class="grid">
-                <a href="landing/verbal-reasoning.html" class="card verbal" style="--i:0" id="card-verbal">
+    <!-- ─── Reasoning ─── -->
+    <section class="tile reasoning">
+        <div class="tile-inner">
+            <p class="tile-eyebrow reveal">Reasoning</p>
+            <h2 class="reveal reveal-delay-1">Think sharper.</h2>
+            <p class="tile-subtitle reveal reveal-delay-2">Challenge your verbal and non-verbal reasoning with pattern puzzles and word games.</p>
+
+            <div class="card-grid">
+                <a href="landing/verbal-reasoning.html" class="card verbal reveal" id="card-verbal">
                     <div class="card-icon">📝</div>
                     <div class="card-title">Verbal Reasoning</div>
                     <div class="card-desc">Words &amp; language</div>
                     <div class="card-badge" id="best-verbal"></div>
                 </a>
-                <a href="landing/non-verbal-reasoning.html" class="card pattern" style="--i:1" id="card-nonverbal">
+                <a href="landing/non-verbal-reasoning.html" class="card pattern reveal reveal-delay-1" id="card-nonverbal">
                     <div class="card-icon">🔷</div>
                     <div class="card-title">Non-Verbal Reasoning</div>
                     <div class="card-desc">Patterns &amp; sequences</div>
                     <div class="card-badge" id="best-nonverbal"></div>
                 </a>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <a href="index.html" class="footer-link">
-                <span>↻</span> Refresh page
-            </a>
-        </footer>
-    </div>
+    <!-- ─── Footer ─── -->
+    <footer class="site-footer">
+        <p>Ivaan's Learning Centre &middot; Built with ❤️ &middot; <a href="index.html">Refresh</a></p>
+    </footer>
 
     <script>
-        /* ── Floating particles ── */
-        (function createParticles() {
-            const container = document.getElementById('particles');
-            const count = window.innerWidth < 640 ? 20 : 40;
-            for (let i = 0; i < count; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.top = (100 + Math.random() * 20) + '%';
-                p.style.width = p.style.height = (1.5 + Math.random() * 2.5) + 'px';
-                p.style.animationDuration = (12 + Math.random() * 18) + 's';
-                p.style.animationDelay = (Math.random() * 15) + 's';
-                container.appendChild(p);
-            }
-        })();
+        /* ── Scroll-reveal observer ── */
+        const revealEls = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    observer.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+        revealEls.forEach(el => observer.observe(el));
 
         /* ── Timer selector ── */
         let selectedTimer = localStorage.getItem('ivaan_timer') || 'off';
@@ -606,7 +600,6 @@
             } else {
                 hintEl.textContent = 'No timer — take your time!';
             }
-            // Update all card hrefs
             allCards.forEach(card => {
                 const base = card.getAttribute('href').split('?')[0];
                 if (selectedTimer && selectedTimer !== 'off') {
